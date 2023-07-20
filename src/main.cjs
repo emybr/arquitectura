@@ -13,10 +13,11 @@ const mongoRoutes = require('../src/routes/routes-mongo.cjs');
 const Database = require('../src/config/config.cjs')
 const userManagerDb = require('./dao/mongo/user-manager-db.cjs');
 const ChatManagerDb = require('./dao/mongo/chat-manager.db.cjs');
-const { ProductManager } = require('./dao/file/product-manager.cjs');
+// const { ProductManager } = require('./dao/file/product-manager.cjs');
 const db = new Database();
 const chatManagerDb = new ChatManagerDb
 const path = require('path');
+const io = new Server(httpServer);
 
 
 // Configuración de sesión
@@ -56,28 +57,30 @@ db.connectToDatabase()
     });
 
 // Configuración de Socket.IO
-const io = new Server(httpServer);
-const productManager = new ProductManager();
-productManager.loadProductsFromFile();
+// const io = new Server(httpServer);
+// const productManager = new ProductManager();
+// productManager.loadProductsFromFile();
 
 io.on('connection', (socket) => {
     console.log('Nuevo cliente conectado!');
 
-    const products = productManager.getProducts();
-    socket.emit('products', { products });
 
-    console.log(products);
 
-    socket.on('newProduct', async (product) => {
-        try {
-            await db.createProduct(product.title, product.description, product.price, product.thumbnail, product.code, product.stock);
-            console.log(product);
+    // const products = productManager.getProducts();
+    // socket.emit('products', { products });
 
-            io.emit('updateProducts', { products: await db.getAllProducts() });
-        } catch (error) {
-            socket.emit('errorMessage', { status: 'error', message: error.message });
-        }
-    });
+    // console.log(products);
+
+    // socket.on('newProduct', async (product) => {
+    //     try {
+    //         await db.createProduct(product.title, product.description, product.price, product.thumbnail, product.code, product.stock);
+    //         console.log(product);
+
+    //         io.emit('updateProducts', { products: await db.getAllProducts() });
+    //     } catch (error) {
+    //         socket.emit('errorMessage', { status: 'error', message: error.message });
+    //     }
+    // });
 
 
     socket.on('chat message', async (message, username) => {
